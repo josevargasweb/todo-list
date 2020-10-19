@@ -61,7 +61,7 @@ export default {
       ]
     }
   },
-  computed: {
+  computed: {  
     remaining() {  //muetra la cantidad de tareas que quedan como no completadas
       return this.todos.filter(todo => !todo.completed).length
     },
