@@ -82,7 +82,7 @@ export default {
   },
   data() {
     return {
-      newTodo: "", // el dato que tendra title
+      newTodo: "", // el dato que tendra title  
       idForTodo: 3, //id en que comienza a contar para ingresar nuevos datos
       beforeEditCache: "", // es el dato que se guarda previamente en el caso de que el usuario guarde un dato que no cumpla con lo deseado
       filter: "all", // filtro marcado
