@@ -103,6 +103,14 @@ export default {
       ]
     };
   },
+    created() {
+    eventBus.$on('removedTodo', (id) => this.removeTodo(id))
+    eventBus.$on('finishedEdit', (data) => this.finishedEdit(data))
+  },
+  beforeDestroy() {
+    eventBus.$off('removedTodo')
+    eventBus.$off('finishedEdit')
+  },
   computed: {
     // muetra la cantidad de tareas no seleccionadas o restantes
     remaining() {
