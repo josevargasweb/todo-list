@@ -19,8 +19,7 @@
         :todo="todo"
         :index="index"
         :checkAll="!anyRemaining"
-        @removedTodo="removeTodo"
-        @finishedEdit="finishedEdit"  
+         
       >
        <!-- desde el hijo recibe la funcion removedTodo -->
 
@@ -29,43 +28,18 @@
     </transition-group>
 
     <div class="extra-container">
-      <div>
-        <label for="">
-          <input
-            type="checkbox"
-            :checked="!anyRemaining"
-            @change="checkAllTodos"
-          />
-          Comprobar todo
-        </label>
-      </div>
-      <div>{{ remaining }} elementos restantes</div>
+     <todo-check-all :anyRemaining="anyRemaining"  ></todo-check-all>
+      <todo-items-remaining :remaining="remaining"></todo-items-remaining>
     </div>
 
     <div class="extra-container">
-      <div>
-        <button :class="{ active: filter == 'all' }" @click="filter = 'all'">
-          Todos
-        </button>
-        <button
-          :class="{ active: filter == 'active' }"
-          @click="filter = 'active'"
-        >
-          Activos
-        </button>
-        <button
-          :class="{ active: filter == 'completed' }"
-          @click="filter = 'completed'"
-        >
-          Completados
-        </button>
-      </div>
+     <todo-filtered></todo-filtered>
 
       <div>
         <transition name="fade">
-          <button v-if="showClearCompletedButton" @click="clearCompleted">
-            Limpiar Completados
-          </button>
+          <todo-clear-completed 
+          :showClearCompletedButton="showClearCompletedButton"
+          ></todo-clear-completed>
         </transition>
       </div>
     </div>
@@ -74,15 +48,23 @@
 
 <script>
 import TodoItem from './TodoItem'
+import TodoItemsRemaining from './TodoItemsRemaining'
+import TodoCheckAll from './TodoCheckAll'
+import TodoFiltered from './TodoFiltered'
+import TodoClearCompleted from './TodoClearCompleted'
 
 export default {
   name: "todo-list",
   components:{
     TodoItem,
+    TodoItemsRemaining,
+    TodoCheckAll,
+    TodoFiltered,
+    TodoClearCompleted,
   },
   data() {
     return {
-      newTodo: "", // el dato que tendra title
+      newTodo: "", // el dato que tendra title  
       idForTodo: 3, //id en que comienza a contar para ingresar nuevos datos
       beforeEditCache: "", // es el dato que se guarda previamente en el caso de que el usuario guarde un dato que no cumpla con lo deseado
       filter: "all", // filtro marcado
@@ -103,13 +85,19 @@ export default {
       ]
     };
   },
-    created() {
-    eventBus.$on('removedTodo', (id) => this.removeTodo(id))
-    eventBus.$on('finishedEdit', (data) => this.finishedEdit(data))
+  created(){
+    eventBus.$on('removedTodo',(index) => this.removeTodo(index))
+    eventBus.$on('finishedEdit',(data) => this.finishedEdit(data))
+    eventBus.$on('checkAllChanged',(checked) => this.checkAllTodos(checked))
+    eventBus.$on('filterChanged',(filter) => this.filter = filter)
+    eventBus.$on('clearCompletedTodos',() => this.clearCompleted())
   },
-  beforeDestroy() {
-    eventBus.$off('removedTodo')
-    eventBus.$off('finishedEdit')
+  beforeDestroy(){
+   eventBus.$off('removedTodo',(index) => this.removeTodo(index))
+    eventBus.$off('finishedEdit',(data) => this.finishedEdit(data))
+    eventBus.$off('checkAllChanged',(checked) => this.checkAllTodos(checked))
+    eventBus.$off('filterChanged',(filter) => this.filter = filter)
+    eventBus.$off('clearCompletedTodos',() => this.clearCompleted())
   },
   computed: {
     // muetra la cantidad de tareas no seleccionadas o restantes
