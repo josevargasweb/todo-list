@@ -92,32 +92,47 @@ export default {
       if (this.title.trim() == "") {
         this.title = this.beforeEditCache;
       }
-
       this.editing = false;
-      eventBus.$emit("finishedEdit", {
-        index: this.index,
-        todo: {
+ this.$store.dispatch('updateTodo',{
           id: this.id,
           title: this.title,
           completed: this.completed,
           editing: this.editing
-        }
-      });
+        });
+
+   
+      // eventBus.$emit("finishedEdit", {
+      //   index: this.index,
+      //   todo: {
+      //     id: this.id,
+      //     title: this.title,
+      //     completed: this.completed,
+      //     editing: this.editing
+      //   }
+      // });
     },
     // cancela el editado en el caso de apretar escape
     cancelEdit() {
       this.title = this.beforeEditCache;
       this.editing = false;
     },
-    removeTodo(index) {
+    removeTodo(id) {
       //metodo ya creado que se le envia al padre con el nombre removedTodo + el index
-      eventBus.$emit("removedTodo", index);
+      this.$store.dispatch('deleteTodo',id);
+ 
     },
     pluralize(){
       eventBus.$emit('pluralize')
     },
     handlePluralize(){
       this.title = this.title + 's'
+       const index = this.$store.state.todos.findIndex(item => item.id == this.id);
+            this.$store.state.todos.splice(index,1, {
+          id: this.id,
+          title: this.title,
+          completed: this.completed,
+          editing: this.editing
+        });
     }
   }
 };
